@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Hyper news {% endblock %}
+{% block content %}
+<h2>Hyper news</h2>
+<form action="/news/" method="get">
+    <input name="q" value="">
+</form>
+{% for day, new_per_day in sorted_news.items %}
+<h4>{{day|date:"Y-m-d"}}</h4>
+<ul>
+    {% for news in new_per_day %}
+    <li><a target="_blank" href="/news/{{news.link}}/">{{news.title}}</a></li>
+    {% endfor %}
+</ul>
+{% endfor %}
+<a target="_blank" href="/news/create/">Create</a>
+{% endblock %}
