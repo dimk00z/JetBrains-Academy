@@ -59,7 +59,9 @@ class TextGenerator:
         try:
             print(self.tokens[index])
         except IndexError:
-            print("Index Error. Please input an integer that is in the range of the corpus.")
+            print(
+                "Index Error. Please input an integer that is in the range of the corpus."
+            )
 
     def first_task_print_statistics(self):
         print("Corpus statistics")
@@ -93,7 +95,9 @@ class TextGenerator:
             print(f"Head: {user_input}")
             if user_input in self.markov_chain:
                 for tail, tail_count in sorted(
-                    self.markov_chain[user_input].items(), key=lambda i: i[1], reverse=True
+                    self.markov_chain[user_input].items(),
+                    key=lambda i: i[1],
+                    reverse=True,
                 ):
                     print(f"Tail: {tail} Count: {tail_count}")
             else:
@@ -105,7 +109,9 @@ class TextGenerator:
         self.get_bigrams()
         self.get_markov_chain()
         sentences_number = 10
-        generated_text = self.generate_strict_random_sentences(sentences_number=sentences_number)
+        generated_text = self.generate_strict_random_sentences(
+            sentences_number=sentences_number
+        )
         print(generated_text)
 
     def generate_strict_random_sentences(
@@ -117,9 +123,9 @@ class TextGenerator:
             sentence = []
             for _ in range(words_in_sentence):
                 head = choice(words)
-                tail, _ = sorted(self.markov_chain[head].items(), key=lambda i: i[1], reverse=True)[
-                    0
-                ]
+                tail, _ = sorted(
+                    self.markov_chain[head].items(), key=lambda i: i[1], reverse=True
+                )[0]
                 sentence.append(f"{head} {tail}")
             text.append(" ".join(sentence))
         return "\n".join(text)
@@ -130,7 +136,9 @@ class TextGenerator:
         generated_text = self.generate_full_sentences()
         print(generated_text)
 
-    def generate_full_sentences(self, sentences_number: int = 10, words_in_sentence: int = 10):
+    def generate_full_sentences(
+        self, sentences_number: int = 10, words_in_sentence: int = 10
+    ):
         text = []
         words = tuple(self.markov_chain.keys())
         while len(text) != sentences_number:

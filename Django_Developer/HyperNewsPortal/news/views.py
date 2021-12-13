@@ -26,17 +26,18 @@ def load_news(query: Optional[str] = None):
     for news in loaded_news:
         if query and query not in news["title"]:
             continue
-        day = datetime.strptime(news["created"].split()[0], '%Y-%m-%d')
+        day = datetime.strptime(news["created"].split()[0], "%Y-%m-%d")
         if day not in news_by_date:
             news_by_date[day] = []
 
         news_by_date[day].append(
             {
-                "created": datetime.strptime(news["created"], '%Y-%m-%d %H:%M:%S'),
+                "created": datetime.strptime(news["created"], "%Y-%m-%d %H:%M:%S"),
                 "link": news["link"],
                 "title": news["title"],
                 "text": news["text"],
-            })
+            }
+        )
     return OrderedDict(sorted(news_by_date.items(), reverse=True))
 
 
@@ -50,7 +51,7 @@ class NewsMainView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        query = self.request.GET.get('q', None)
+        query = self.request.GET.get("q", None)
         news = load_news(query=query)
         context["sorted_news"] = news
         return context
@@ -77,15 +78,18 @@ class CreateNewsView(TemplateView):
     template_name = "create_news.html"
 
     def post(self, request, *args, **kwargs):
-        title = request.POST.get('title')
-        text = request.POST.get('text')
+        title = request.POST.get("title")
+        text = request.POST.get("text")
         # print(title, text)
         loaded_news = load_news_to_dict()
-        loaded_news.append({
-            "link": randint(1, 10 ** 10),
-            "created": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            "title": title,
-            "text": text})
+        loaded_news.append(
+            {
+                "link": randint(1, 10 ** 10),
+                "created": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "title": title,
+                "text": text,
+            }
+        )
 
         with open(JSON_FILE_PATH, mode="w", encoding="utf-8") as news_file:
             news_file.write(json.dumps(loaded_news))

@@ -8,7 +8,12 @@ from socket import socket
 
 
 class SocketHacker:
-    def __init__(self, connection_params, passwords_file="passwords.txt", logins_file="logins.txt") -> None:
+    def __init__(
+        self,
+        connection_params,
+        passwords_file="passwords.txt",
+        logins_file="logins.txt",
+    ) -> None:
         self.connection_params = connection_params
         self.socket = socket()
         self.connect()
@@ -16,8 +21,9 @@ class SocketHacker:
         self.logins = self._load_file(file_name=logins_file)
 
     def connect(self) -> None:
-        self.socket.connect((self.connection_params["host"],
-                             self.connection_params["port"]))
+        self.socket.connect(
+            (self.connection_params["host"], self.connection_params["port"])
+        )
 
     def send(self, data: str) -> None:
         self.socket.send(data.encode())
@@ -29,13 +35,10 @@ class SocketHacker:
         self.send(json.dumps(dict_for_send))
 
     def json_brute_force(self):
-        """ Tasks 4-5 """
+        """Tasks 4-5"""
         password = ""
         for login in self.logins:
-            self.send_json({
-                "login": login,
-                "password": password
-            })
+            self.send_json({"login": login, "password": password})
             answer = json.loads(self._receive())
             if answer["result"] == "Wrong password!":
                 break
@@ -43,20 +46,19 @@ class SocketHacker:
         password = ""
         for number in range(1, 10):
             for letter in letters:
-                current_password = f'{password}{letter}'
-                self.send_json({
-                    "login": login,
-                    "password": current_password
-                })
+                current_password = f"{password}{letter}"
+                self.send_json({"login": login, "password": current_password})
                 start = datetime.now()
                 answer = json.loads(self._receive())
                 time_delta = datetime.now() - start
-                if "Wrong password!" in answer["result"] and time_delta.microseconds >= 90000:
+                if (
+                    "Wrong password!" in answer["result"]
+                    and time_delta.microseconds >= 90000
+                ):
                     password = password + letter
                     break
                 elif "Connection success!" in answer["result"]:
-                    return json.dumps({"login": login,
-                                       "password": current_password})
+                    return json.dumps({"login": login, "password": current_password})
 
     def _load_file(self, file_name: str):
         full_path = Path(Path.cwd(), file_name)
@@ -64,11 +66,15 @@ class SocketHacker:
             return dict_file.read().split("\n")
 
     def brute_force_with_dictionary(self, file_name="passwords.txt"):
-        """ Task 3 """
+        """Task 3"""
         self.dictionary = self._load_file(file_name=file_name)
         for word in self.dictionary:
-            for password in map(lambda x: ''.join(x),
-                                itertools.product(*([letter.lower(), letter.upper()] for letter in word))):
+            for password in map(
+                lambda x: "".join(x),
+                itertools.product(
+                    *([letter.lower(), letter.upper()] for letter in word)
+                ),
+            ):
 
                 self.send(data=password)
                 response = self._receive()
@@ -76,7 +82,7 @@ class SocketHacker:
                     return password
 
     def brute_force(self):
-        """ Task 2 """
+        """Task 2"""
         line = string.ascii_lowercase + string.digits
         for length in range(1, 10):
             for password_var in itertools.product(line, repeat=length):
@@ -102,17 +108,10 @@ class SocketHacker:
 
 
 def parse_params():
-    parser = argparse.ArgumentParser(
-        description="Project: Password Hacker")
-    parser.add_argument(
-        "host",
-        help="Host for connection")
-    parser.add_argument(
-        "port",
-        help="Port for connection")
-    parser.add_argument(
-        "--password",
-        help="Password for connection")
+    parser = argparse.ArgumentParser(description="Project: Password Hacker")
+    parser.add_argument("host", help="Host for connection")
+    parser.add_argument("port", help="Port for connection")
+    parser.add_argument("--password", help="Password for connection")
     args = parser.parse_args()
     return {
         "host": args.host,
@@ -127,5 +126,5 @@ def main():
         print(socket_hacker.json_brute_force())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

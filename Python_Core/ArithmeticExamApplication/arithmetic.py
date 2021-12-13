@@ -62,10 +62,17 @@ class MiniCalculator:
                 print("Incorrect format.")
 
     def user_check(self, tasks=5):
-        levels = {1: "simple operations with numbers 2-9", 2: "integral squares of 11-29"}
+        levels = {
+            1: "simple operations with numbers 2-9",
+            2: "integral squares of 11-29",
+        }
         print(
             "\n".join(
-                ("Which level do you want? Enter a number:", f"1 - {levels[1]}", f"2 - {levels[2]}")
+                (
+                    "Which level do you want? Enter a number:",
+                    f"1 - {levels[1]}",
+                    f"2 - {levels[2]}",
+                )
             )
         )
         level = MiniCalculator.get_int_input()
@@ -81,7 +88,9 @@ class MiniCalculator:
             else:
                 print("Wrong!")
 
-        print(f"Your mark is {result}/{tasks}.Would you like to save the result? Enter yes or no.")
+        print(
+            f"Your mark is {result}/{tasks}.Would you like to save the result? Enter yes or no."
+        )
         user_answer = input()
         if user_answer.lower() in ("yes", "y"):
             user_name = input("What is your name?\n")

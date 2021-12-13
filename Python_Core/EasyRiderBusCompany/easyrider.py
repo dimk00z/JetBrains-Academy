@@ -33,15 +33,14 @@ class BusChecker:
         lines = {}
         for bus_info in self.easy_rider_data:
             if bus_info["bus_id"] not in lines:
-                lines[bus_info["bus_id"]] = {"stops": {},
-                                             "time_error": None}
+                lines[bus_info["bus_id"]] = {"stops": {}, "time_error": None}
             hours, minutes = map(int, bus_info["a_time"].split(":"))
             bus_stop = BusStop(
                 id=bus_info["stop_id"],
                 stop_name=bus_info["stop_name"],
                 next_stop=bus_info["next_stop"],
                 a_time=hours * 60 + minutes,
-                type=bus_info["stop_type"]
+                type=bus_info["stop_type"],
             )
             if bus_info["stop_type"] == "S":
                 lines[bus_info["bus_id"]]["start"] = bus_stop.id
@@ -61,22 +60,25 @@ class BusChecker:
                 if not check_time:
                     line_name = lines[line]["stops"][next_id].stop_name
                     lines[line][
-                        "time_error"] = f"bus_id line {line}: wrong time on station {line_name}"
+                        "time_error"
+                    ] = f"bus_id line {line}: wrong time on station {line_name}"
                     break
                 current_stop = lines[line]["stops"][next_id]
                 next_id = current_stop.next_stop
-        errors = [lines[line]["time_error"] for line in lines if lines[line]["time_error"]]
+        errors = [
+            lines[line]["time_error"] for line in lines if lines[line]["time_error"]
+        ]
         if errors:
-            return '\n'.join(("Arrival time test:", *errors))
+            return "\n".join(("Arrival time test:", *errors))
         else:
             return "\n".join(("Arrival time test:", "OK"))
 
     def check_lines(self) -> str:
         lines: dict = {}
         stops: Dict[str, set] = {
-            'start_stops': set(),
-            'transfer_stops': set(),
-            'finish_stops': set(),
+            "start_stops": set(),
+            "transfer_stops": set(),
+            "finish_stops": set(),
         }
         for bus_info in self.easy_rider_data:
 
@@ -85,10 +87,10 @@ class BusChecker:
             lines[bus_info["bus_id"]]["all_stops"].add(bus_info["stop_name"])
 
             if bus_info["stop_type"] == "S":
-                stops['start_stops'].add(bus_info["stop_name"])
+                stops["start_stops"].add(bus_info["stop_name"])
                 lines[bus_info["bus_id"]]["start"] = bus_info["stop_name"]
             elif bus_info["stop_type"] == "F":
-                stops['finish_stops'].add(bus_info["stop_name"])
+                stops["finish_stops"].add(bus_info["stop_name"])
                 lines[bus_info["bus_id"]]["finish"] = bus_info["stop_name"]
 
         for line in lines:
@@ -96,16 +98,20 @@ class BusChecker:
                 return f"There is no start or end stop for the line: {line}"
 
         for line1, line2 in combinations(lines, r=2):
-            stops['transfer_stops'] |= lines[line1]["all_stops"] & lines[line2]["all_stops"]
+            stops["transfer_stops"] |= (
+                lines[line1]["all_stops"] & lines[line2]["all_stops"]
+            )
 
         return stops
 
     def check_on_demand_stops(self):
         stops = self.check_lines()
-        should_check_stops = stops["start_stops"] | stops["transfer_stops"] | stops["finish_stops"]
+        should_check_stops = (
+            stops["start_stops"] | stops["transfer_stops"] | stops["finish_stops"]
+        )
         on_demand_stops = set()
         for line in self.lines:
-            for stop_id, stop in self.lines[line]['stops'].items():
+            for stop_id, stop in self.lines[line]["stops"].items():
                 if stop.type == "O":
                     on_demand_stops.add(stop.stop_name)
         return sorted(list(on_demand_stops.intersection(should_check_stops)))
@@ -114,22 +120,19 @@ class BusChecker:
         on_demand_stops_errors = self.check_on_demand_stops()
         result = "On demand stops test:"
         if on_demand_stops_errors:
-            print("\n".join((
-                result,
-                f"Wrong stop type: {on_demand_stops_errors}"
-            )))
+            print("\n".join((result, f"Wrong stop type: {on_demand_stops_errors}")))
         else:
-            print("\n".join((
-                result,
-                "OK"
-            )))
+            print("\n".join((result, "OK")))
 
     def print_check_lines_result(self):
         stops = self.check_lines()
-        result = '\n'.join(
-            (f'Start stops: {len(stops["start_stops"])} {sorted(stops["start_stops"])}',
-             f'Transfer stops: {len(stops["transfer_stops"])} {sorted(stops["transfer_stops"])}',
-             f'Finish stops: {len(stops["finish_stops"])} {sorted(stops["finish_stops"])}'))
+        result = "\n".join(
+            (
+                f'Start stops: {len(stops["start_stops"])} {sorted(stops["start_stops"])}',
+                f'Transfer stops: {len(stops["transfer_stops"])} {sorted(stops["transfer_stops"])}',
+                f'Finish stops: {len(stops["finish_stops"])} {sorted(stops["finish_stops"])}',
+            )
+        )
         print(result)
 
     def count_stops(self):
@@ -144,11 +147,13 @@ class BusChecker:
         print("Line names and number of stops:")
         stops_info = self.count_stops()
         for bus_id in sorted(stops_info):
-            print(f'bus_id: {bus_id}, stops: {stops_info[bus_id]}')
+            print(f"bus_id: {bus_id}, stops: {stops_info[bus_id]}")
 
     def print_errors(self):
         self.easy_rider_check()
-        print(f"Type and required field validation: {sum(self.error_counter.values())} errors")
+        print(
+            f"Type and required field validation: {sum(self.error_counter.values())} errors"
+        )
         order = ["stop_name", "stop_type", "a_time"]
         for field in order:
             print(f"{field}: {self.error_counter[field]}")
@@ -167,7 +172,7 @@ class BusChecker:
             elif not self.field_requirements[field]["format"](row[field]):
                 self.error_counter[field] += 1
 
-            elif self.field_requirements[field]['required'] and row[field] is None:
+            elif self.field_requirements[field]["required"] and row[field] is None:
                 self.error_counter[field] += 1
                 continue
 
@@ -177,7 +182,12 @@ class BusChecker:
         words = value.split()
         if len(words) < 2:
             return False
-        if not words[0][0].isupper() or words[-1] not in ("Road", "Avenue", "Street", "Boulevard"):
+        if not words[0][0].isupper() or words[-1] not in (
+            "Road",
+            "Avenue",
+            "Street",
+            "Boulevard",
+        ):
             return False
         return True
 
@@ -188,7 +198,7 @@ class BusChecker:
         return value >= 0
 
     def is_time_format(self, s: str) -> bool:
-        time_re = re.compile(r'^(([01]\d|2[0-3]):([0-5]\d)|24:00)$')
+        time_re = re.compile(r"^(([01]\d|2[0-3]):([0-5]\d)|24:00)$")
         return bool(time_re.match(s))
 
 
@@ -200,5 +210,5 @@ def main():
     bus_checker.print_result_on_demand_check()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
