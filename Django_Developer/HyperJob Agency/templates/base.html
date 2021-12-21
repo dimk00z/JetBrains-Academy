@@ -1,0 +1,22 @@
+{% load static %}
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title>{% block title %} {% endblock %}
+    </title>
+</head>
+<body>
+<h2>{% block headline %}HyperJob{% endblock %}</h2>
+<div>
+    <a href="/login">Login</a>
+    <a href="/signup">Sign up</a>
+    <a href="/vacancies">Vacancy list</a>
+    <a href="/resumes">Resume list</a>
+    <a href="/home">Personal profile</a>
+
+</div>
+{% block content %}
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %} Resumes list {% endblock %}
+
+<h2>{% block headline %}Resumes list{% endblock %}</h2>
+{% block content %}
+    {% for resume in resumes %}
+        <div>
+            {{ resume.author.username }}: {{ resume.description }}
+        </div>
+    {% endfor %}
+{% endblock %}
