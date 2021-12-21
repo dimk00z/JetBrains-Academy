@@ -6,14 +6,18 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('vacancy', '0001_initial'),
+        ("vacancy", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resume',
-            name='vacancy',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='resume',
-                                    to='vacancy.Vacancy'),
+            model_name="resume",
+            name="vacancy",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="resume",
+                to="vacancy.Vacancy",
+            ),
         ),
     ]

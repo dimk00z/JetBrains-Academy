@@ -1,6 +1,6 @@
-from hstest import dynamic_test
-
 from test.base import HyperJobTest
+
+from hstest import dynamic_test
 
 
 class HyperJobTestRunner(HyperJobTest):
@@ -28,5 +28,5 @@ class HyperJobTestRunner(HyperJobTest):
         return func(self)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     HyperJobTestRunner().run_tests()

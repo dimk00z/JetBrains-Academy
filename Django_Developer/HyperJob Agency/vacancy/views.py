@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import CreateView, TemplateView
 from vacancy.models import Vacancy
 
 
@@ -15,9 +15,9 @@ class VacancyMainView(TemplateView):
 
 class CreateVacancyView(CreateView):
     model = Vacancy
-    template_name = 'create_vacancy.html'
-    fields = ['description']
-    success_url = '/vacancies'
+    template_name = "create_vacancy.html"
+    fields = ["description"]
+    success_url = "/vacancies"
 
     def get(self, request):
         print(request.user.is_staff)

@@ -11,20 +11,20 @@ class MainPageView(TemplateView):
 
 class LoginPageView(LoginView):
     redirect_authenticated_user = True
-    template_name = 'login.html'
+    template_name = "login.html"
 
 
 class SingupView(CreateView):
     form_class = UserCreationForm
-    success_url = 'login'
-    template_name = 'signup.html'
+    success_url = "login"
+    template_name = "signup.html"
 
 
 class HomeView(View):
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect('/login')
+            return redirect("/login")
         if not request.user.is_staff:
-            return redirect('/resume/new')
+            return redirect("/resume/new")
         else:
-            return redirect('/vacancy/new')
+            return redirect("/vacancy/new")

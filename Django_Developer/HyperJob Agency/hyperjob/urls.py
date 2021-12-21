@@ -19,10 +19,9 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include("agency_main.urls")),
-    path('vacancies', include("vacancy.urls")),
-    path('resumes', include("resume.urls")),
-    
+    path("admin/", admin.site.urls),
+    path("", include("agency_main.urls")),
+    path("vacancies", include("vacancy.urls")),
+    path("resumes", include("resume.urls")),
 ]
 urlpatterns += static(settings.STATIC_URL)

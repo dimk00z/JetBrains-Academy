@@ -1,6 +1,6 @@
 from django import forms
 from django.http import HttpResponse
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import CreateView, TemplateView
 from resume.models import Resume
 
 
@@ -20,9 +20,9 @@ class CreateResumeForm(forms.Form):
 
 class CreateResumeView(CreateView):
     model = Resume
-    template_name = 'create_resume.html'
-    fields = ['description']
-    success_url = '/resumes'
+    template_name = "create_resume.html"
+    fields = ["description"]
+    success_url = "/resumes"
 
     def get(self, request):
         if request.user.is_authenticated:
