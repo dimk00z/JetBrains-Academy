@@ -26,11 +26,6 @@ func readWords(file_name *string) (forbidden_words map[string]bool) {
 	}
 	return
 }
-func printForbiddenWords(forbidden_words *map[string]bool) {
-	for forbidden_word := range *forbidden_words {
-		fmt.Println(forbidden_word)
-	}
-}
 
 func checkWord(word *string, forbidden_words *map[string]bool) bool {
 	if _, ok := (*forbidden_words)[strings.ToLower(*word)]; ok {
@@ -42,19 +37,31 @@ func checkWord(word *string, forbidden_words *map[string]bool) bool {
 func wordToStars(word *string) string {
 	return strings.Repeat("*", len(*word))
 }
+
+func correctSentence(sentence *string, forbidden_words *map[string]bool) string {
+	words := strings.Split(*sentence, " ")
+
+	for wordPosition, word := range words {
+		if checkWord(&word, forbidden_words) {
+			words[wordPosition] = wordToStars(&word)
+		}
+	}
+	return strings.Join(words, " ")
+}
+
 func main() {
 	var file_name string
 	fmt.Scanf("%s", &file_name)
-	var forbidden_words map[string]bool
-	forbidden_words = readWords(&file_name)
-	var wordForCheck string
-	for fmt.Scanf("%s", &wordForCheck); strings.ToLower(wordForCheck) != "exit"; {
-		if isWordForbidden := checkWord(&wordForCheck, &forbidden_words); isWordForbidden {
-			fmt.Println(wordToStars(&wordForCheck))
-		} else {
-			fmt.Println(wordForCheck)
+	forbidden_words := readWords(&file_name)
+	var sentence string
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		scanner.Scan()
+		if strings.ToLower(scanner.Text()) == "exit" {
+			break
 		}
-		fmt.Scanf("%s", &wordForCheck)
+		sentence = scanner.Text()
+		fmt.Printf("%s\n", correctSentence(&sentence, &forbidden_words))
 	}
 	fmt.Println("Bye!")
 }
