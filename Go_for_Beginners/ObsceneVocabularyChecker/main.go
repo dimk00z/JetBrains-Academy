@@ -39,19 +39,22 @@ func checkWord(word *string, forbidden_words *map[string]bool) bool {
 	return false
 }
 
-// func printStars(word *string) {
-
-// }
+func wordToStars(word *string) string {
+	return strings.Repeat("*", len(*word))
+}
 func main() {
 	var file_name string
 	fmt.Scanf("%s", &file_name)
 	var forbidden_words map[string]bool
 	forbidden_words = readWords(&file_name)
 	var wordForCheck string
-	fmt.Scanf("%s", &wordForCheck)
-	if isWordForbidden := checkWord(&wordForCheck, &forbidden_words); isWordForbidden {
-		fmt.Println("True")
-	} else {
-		fmt.Println("False")
+	for fmt.Scanf("%s", &wordForCheck); strings.ToLower(wordForCheck) != "exit"; {
+		if isWordForbidden := checkWord(&wordForCheck, &forbidden_words); isWordForbidden {
+			fmt.Println(wordToStars(&wordForCheck))
+		} else {
+			fmt.Println(wordForCheck)
+		}
+		fmt.Scanf("%s", &wordForCheck)
 	}
+	fmt.Println("Bye!")
 }
