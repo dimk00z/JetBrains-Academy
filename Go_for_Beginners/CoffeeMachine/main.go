@@ -5,12 +5,19 @@ import (
 	"log"
 )
 
+type CoffeeCup struct {
+	water  int
+	milk   int
+	coffee int
+	price  int
+}
 type CoffeeMachine struct {
 	money          int
 	water          int
 	milk           int
 	coffee         int
 	disposableCups int
+	coffeeCups     map[string]CoffeeCup
 }
 
 func getUserInt() (userInput int) {
@@ -29,27 +36,43 @@ func (coffeeMachine *CoffeeMachine) printState() {
 %d of money
 `, coffeeMachine.water, coffeeMachine.milk, coffeeMachine.coffee, coffeeMachine.disposableCups, coffeeMachine.money)
 }
+func (coffeeMachine *CoffeeMachine) makeCoffee(coffeeType string) {
+	if coffeeMachine.coffeeCups[coffeeType].water > coffeeMachine.water {
+		fmt.Println("Sorry, not enough water!")
+		return
+	}
+	if coffeeMachine.coffeeCups[coffeeType].milk > coffeeMachine.milk {
+		fmt.Println("Sorry, not enough milk!")
+		return
+	}
+	if coffeeMachine.coffeeCups[coffeeType].coffee > coffeeMachine.coffee {
+		fmt.Println("Sorry, not enough coffee beans!")
+		return
+	}
+	if coffeeMachine.disposableCups < 1 {
+		fmt.Println("Sorry, not enough disposable cups!")
+		return
+	}
+	coffeeMachine.water -= coffeeMachine.coffeeCups[coffeeType].water
+	coffeeMachine.milk -= coffeeMachine.coffeeCups[coffeeType].milk
+	coffeeMachine.coffee -= coffeeMachine.coffeeCups[coffeeType].coffee
+	coffeeMachine.money += coffeeMachine.coffeeCups[coffeeType].price
+	coffeeMachine.disposableCups--
+	fmt.Println("I have enough resources, making you a coffee!")
+}
 func (coffeeMachine *CoffeeMachine) buyCoffee() {
 	fmt.Println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:")
-	var userInput int = getUserInt()
+	var userInput string
+	fmt.Scanln(&userInput)
 	switch userInput {
-	case 1:
-		coffeeMachine.water -= 250
-		coffeeMachine.coffee -= 16
-		coffeeMachine.money += 4
-		coffeeMachine.disposableCups--
-	case 2:
-		coffeeMachine.water -= 350
-		coffeeMachine.coffee -= 20
-		coffeeMachine.money += 7
-		coffeeMachine.milk -= 75
-		coffeeMachine.disposableCups--
-	case 3:
-		coffeeMachine.water -= 200
-		coffeeMachine.coffee -= 12
-		coffeeMachine.money += 6
-		coffeeMachine.milk -= 100
-		coffeeMachine.disposableCups--
+	case "1":
+		coffeeMachine.makeCoffee("espresso")
+	case "2":
+		coffeeMachine.makeCoffee("latte")
+	case "3":
+		coffeeMachine.makeCoffee("cappuccino")
+	case "back":
+		return
 	}
 }
 func addUserIntInput(question string, value *int) {
@@ -69,29 +92,51 @@ func (coffeeMachine *CoffeeMachine) takeMoney() {
 	coffeeMachine.money = 0
 }
 func newInitCoffeeMachine() CoffeeMachine {
+	coffeeCups := make(map[string]CoffeeCup)
+	coffeeCups["espresso"] = CoffeeCup{
+		water:  250,
+		milk:   0,
+		coffee: 16,
+		price:  4}
+	coffeeCups["latte"] = CoffeeCup{
+		water:  350,
+		milk:   75,
+		coffee: 20,
+		price:  7}
+	coffeeCups["cappuccino"] = CoffeeCup{
+		water:  200,
+		milk:   100,
+		coffee: 12,
+		price:  6}
 	return CoffeeMachine{
 		water:          400,
 		milk:           540,
 		coffee:         120,
 		disposableCups: 9,
-		money:          550}
+		money:          550,
+		coffeeCups:     coffeeCups,
+	}
 }
 func buyFillTake() {
 	var coffeeMachine CoffeeMachine = newInitCoffeeMachine()
-	coffeeMachine.printState()
-	fmt.Println("Write action (buy, fill, take):")
-	var userChoice string
-	fmt.Scanf("%s", &userChoice)
-	switch userChoice {
-	case "buy":
-		coffeeMachine.buyCoffee()
-	case "fill":
-		coffeeMachine.fillIngredients()
-	case "take":
-		coffeeMachine.takeMoney()
-	}
-	coffeeMachine.printState()
+	for {
+		fmt.Println("Write action (buy, fill, take, remaining, exit):")
+		var userChoice string
+		fmt.Scanf("%s", &userChoice)
+		switch userChoice {
+		case "buy":
+			coffeeMachine.buyCoffee()
+		case "fill":
+			coffeeMachine.fillIngredients()
+		case "take":
+			coffeeMachine.takeMoney()
+		case "remaining":
+			coffeeMachine.printState()
+		case "exit":
+			return
 
+		}
+	}
 }
 func main() {
 	buyFillTake()
